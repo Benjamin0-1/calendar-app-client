@@ -1,0 +1,50 @@
+/* DeleteByPhone.css */
+
+.DeleteByPhone {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.DeleteByPhone h3 {
+    color: #1877f2;
+}
+
+.DeleteByPhone p {
+    margin-bottom: 10px;
+}
+
+.DeleteByPhone input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.DeleteByPhone button {
+    background-color: #1877f2;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.DeleteByPhone button:hover {
+    background-color: #0e5a9d;
+}
+
+.DeleteByPhone .error {
+    color: #f00;
+    margin-top: 10px;
+}
+
+.DeleteByPhone .success {
+    color: #008000;
+    margin-top: 10px;
+}

@@ -1,0 +1,51 @@
+/* DeleteBooking.css */
+
+.DeleteBooking {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .DeleteBooking h3 {
+    color: #1877f2;
+  }
+  
+  .DeleteBooking label {
+    margin-bottom: 10px;
+  }
+  
+  .DeleteBooking input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .DeleteBooking button {
+    background-color: #ff3333;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .DeleteBooking button:hover {
+    background-color: #cc0000;
+  }
+  
+  .DeleteBooking div {
+    color: red;
+    margin-top: 5px;
+  }
+  
+  .DeleteBooking div.success {
+    color: green;
+  }
+  

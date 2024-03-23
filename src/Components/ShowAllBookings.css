@@ -1,0 +1,50 @@
+/* ShowAllBookings.css */
+
+.ShowAllBookings {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ShowAllBookings h2 {
+    color: #1877f2;
+  }
+  
+  .ShowAllBookings div {
+    margin-bottom: 10px;
+  }
+  
+  .ShowAllBookings ol {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .ShowAllBookings li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .ShowAllBookings li div {
+    margin-bottom: 5px;
+  }
+  
+  .ShowAllBookings li div:first-child {
+    font-weight: bold;
+  }
+  
+  .ShowAllBookings .error {
+    color: #f00;
+    margin-top: 10px;
+  }
+  
+  .ShowAllBookings .info {
+    color: #1877f2;
+    margin-top: 10px;
+  }
+  

@@ -1,0 +1,68 @@
+/* SearchByName.css */
+
+.SearchByName {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .SearchByName h3 {
+    color: #1877f2;
+  }
+  
+  .SearchByName form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .SearchByName label {
+    margin-bottom: 10px;
+  }
+  
+  .SearchByName input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .SearchByName button {
+    background-color: #1877f2;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .SearchByName button:hover {
+    background-color: #0e5a9d;
+  }
+  
+  .SearchByName div {
+    color: blue;
+    margin-top: 5px;
+  }
+  
+  .SearchByName div.success {
+    color: green;
+  }
+  
+  .SearchByName ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .SearchByName li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  

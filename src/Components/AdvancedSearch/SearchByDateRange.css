@@ -1,0 +1,73 @@
+/* SearchByDateRange.css */
+
+.SearchByDateRange {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .SearchByDateRange h2 {
+    color: #1877f2;
+  }
+  
+  .SearchByDateRange form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .SearchByDateRange label {
+    margin-bottom: 10px;
+  }
+  
+  .SearchByDateRange input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .SearchByDateRange button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .SearchByDateRange button:hover {
+    background-color: #45a049;
+  }
+  
+  .SearchByDateRange div {
+    color: blue;
+    margin-top: 5px;
+  }
+  
+  .SearchByDateRange div.success {
+    color: green;
+  }
+  
+  .SearchByDateRange ol {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .SearchByDateRange li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .SearchByDateRange li p {
+    margin: 0;
+    padding: 5px 0;
+  }
+  

@@ -1,0 +1,68 @@
+/* SearchByPhone.css */
+
+.SearchByPhone {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .SearchByPhone h3 {
+    color: #1877f2;
+  }
+  
+  .SearchByPhone form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .SearchByPhone label {
+    margin-bottom: 10px;
+  }
+  
+  .SearchByPhone input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .SearchByPhone button {
+    background-color: #1877f2;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .SearchByPhone button:hover {
+    background-color: #0e5a9d;
+  }
+  
+  .SearchByPhone div {
+    color: blue;
+    margin-top: 5px;
+  }
+  
+  .SearchByPhone div.success {
+    color: green;
+  }
+  
+  .SearchByPhone ol {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .SearchByPhone li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  

@@ -1,0 +1,25 @@
+/* NavBar.css */
+
+.NavBar {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid blue;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .NavBar a {
+    color: #1877f2;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+  
+  .NavBar a:hover {
+    text-decoration: underline;
+  }
+  
+  

@@ -1,0 +1,52 @@
+.UpdateBooking {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.UpdateBooking h3 {
+    margin-top: 0;
+}
+
+.UpdateBooking form {
+    display: flex;
+    flex-direction: column;
+}
+
+.UpdateBooking label {
+    margin-bottom: 10px;
+}
+
+.UpdateBooking input[type="text"],
+.UpdateBooking input[type="email"],
+.UpdateBooking select,
+.UpdateBooking textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.UpdateBooking button {
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.UpdateBooking button:hover {
+    background-color: #0056b3;
+}
+
+.UpdateBooking p {
+    margin-top: 10px;
+    font-size: 14px;
+}

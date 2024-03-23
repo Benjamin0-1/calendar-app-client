@@ -1,0 +1,53 @@
+/* DeleteByRange.css */
+
+.DeleteByRange {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .DeleteByRange p {
+    margin-bottom: 15px;
+  }
+  
+  .DeleteByRange label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .DeleteByRange input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .DeleteByRange button {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    margin-top: 20px;
+    background-color: #1877f2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .DeleteByRange button:hover {
+    background-color: #0e5a9d;
+  }
+  
+  .DeleteByRange p.error-message {
+    color: #f00;
+    margin-top: 10px;
+  }
+  .DeleteByRange p.success-message {
+    color: #008000;
+    margin-top: 10px;
+  }
+  
