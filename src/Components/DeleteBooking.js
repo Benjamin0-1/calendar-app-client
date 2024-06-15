@@ -4,6 +4,11 @@ import './DeleteBooking.css';
 import DeleteByName from "./DeleteByName";
 import DeleteByPhone from "./DeleteByPhone";
 import DeleteByRange from "./DeleteByDateRange";
+import FetchWithAuth from "../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function DeleteBooking() {
 const [dateToDelete, setDateToDelete] = useState('');
@@ -15,6 +20,10 @@ const [currentDateError, setCurrentDateError] = useState('');
 const [noDateFound, setNoDateFound] = useState(false); // from the server
 const [error, setError] = useState(''); // for the catch block
 // const [dateDetails, setDateDetails] = useState(null);
+
+if (!accessToken) {
+    window.location.href = '/login'
+};
 
 const handleDelete = async () => {
 setSuccessDeleting(false);
@@ -38,7 +47,12 @@ return;
 // }
 
 try {
-const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/deletebooking?deleteBooking=${dateToDelete}`);
+const response = await FetchWithAuth(`${URL}/deletebooking?deleteBooking=${dateToDelete}`, {
+    method: 'DELETE',
+    headers: {
+        'Authorization': `Bearer ${accessToken}`
+      },
+});
 
 if (response.status === 200) {
 const data = await response.json();

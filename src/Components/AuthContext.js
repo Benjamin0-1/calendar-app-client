@@ -26,3 +26,4 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
+// this will not be used, we have moved to JWTS.

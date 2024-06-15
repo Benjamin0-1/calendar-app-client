@@ -1,5 +1,4 @@
-// App.js
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Navbar from './Components/NavBar';
@@ -11,53 +10,58 @@ import DeleteByName from './Components/DeleteByName';
 import DeleteByPhone from './Components/DeleteByPhone';
 import DeleteByRange from './Components/DeleteByDateRange';
 import UpdateBooking from './Components/UpdateBooking';
+import DeletedDate from './Components/DeletedDate';
+
+// user pages
+import FAQ from './UserPages/FAQ';
+import AboutUsPage from './UserPages/AboutUs';
+import Landing from './UserPages/Landing';
+import NewsLetter from './UserPages/NewsLetter';
 
 // Login Imports:
 import Login from './Components/Login';
 
-export const LoginContext = createContext();
+const accessToken = localStorage.getItem('accessToken');
+
+const URL = process.env.REACT_APP_SERVER_URL;
+
 
 function App() {
   const [access, setAccess] = useState(false); // MUST BE: FALSE
-
-  const loginContextValue = {
-    access,
-    setAccess,
-  };
+  
+  // REMOVE !
+ 
   
   // LOGIN is not being rendered below.
+  // these need to be normal routes not ProtedRoute.
   return (
-    <LoginContext.Provider value={loginContextValue}>
-      <Router>
-        {access ? (
-          <div className="App">
-            <Navbar />
+    <Router>
+      <div className="App">
+        <Navbar />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/book" element={<BookDate />} access={access} />
+          <Route path="/delete" element={<DeleteBooking />} access={access} />
+          <Route path="/showbookings" element={<ShowAllBookings />} access={access} />
+          <Route path="/parentsearch" element={<ParentSearch />} access={access} />
+          <Route path="/deletebyname" element={<DeleteByName />} access={access} />
+          <Route path="/deletebyphone" element={<DeleteByPhone />} access={access} />
+          <Route path="/deletebyrange" element={<DeleteByRange />} access={access} />
+          <Route path="/updatebooking" element={<UpdateBooking />} access={access} />
+          <Route path="*" element={<Navigate to={access ? "/book" : "/login"} />} />
+          <Route path='/deleteddate' element={< DeletedDate />} />
+          <Route path='/admin' element={< Login />} />
 
-            <Routes>
-              <Route path="/book" element={<BookDate />} />
-              <Route path="/delete" element={<DeleteBooking />} />
-              <Route path="/showbookings" element={<ShowAllBookings />} />
-              <Route path="/parentsearch" element={<ParentSearch />} />
-              <Route path='/deletebyname' element={< DeleteByName/>} />
-              <Route path='/deletebyphone' element={< DeleteByPhone/>} />
-              <Route path='/deletebyrange' element={< DeleteByRange />} />
-              <Route path='/updatebooking' element={< UpdateBooking />} />
-             
-            </Routes>
-
-            <header className="App-header">
-              {/* Your header content goes here */}
-              <h1></h1>
-            </header>
-          </div>
-        ) : (
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        )}
-      </Router>
-    </LoginContext.Provider>
+          <Route path='/faq' element={< FAQ />} />
+          <Route path='/aboutus' element={< AboutUsPage />} />
+          <Route path='/landing'  element={< Landing/>}/>
+          <Route path='/newsletter' element={< NewsLetter />} />
+        </Routes>
+        <header className="App-header">
+          <h1></h1>
+        </header>
+      </div>
+    </Router>
   );
 }
 

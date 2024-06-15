@@ -1,12 +1,15 @@
-import React, { useState, useContext } from 'react';
-import { LoginContext } from '../App';
-import { Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import './Login.css';
+import FetchWithAuth from '../auth/FetchWithAuth'; // <-- being used Here ?
 
-const localhostURL = 'http://localhost:4001/login';
+const localhost_url = 'http://localhost:4001'
+
+const accessToken = localStorage.getItem('accessToken');
+
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function Login() {
-    const {access, setAccess } = useContext(LoginContext);
   
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -14,12 +17,23 @@ function Login() {
     const [successMessage, setSuccessMessage] = useState('');
   
     const [alreadyLoggedIn, setAlreadyLoggedIn] = useState('');
-  
+
+    // if access token then no need to view the login page
+    if (accessToken) {
+      window.location.href = '/showbookings'
+    };
+
+
+    // this logic needs to change
+    // if the server responds posivetily,
+    // then store the access and refresh token in localeStorage.
+    /*
     const handleSubmit = async (e) => {
       e.preventDefault();
   
       try {
-        const response = await fetch('https://calendar-app-server3-2499724774e3.herokuapp.com/login', {
+        const response = await fetch('http://localhost:4001/login', {
+          credentials: 'include',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -48,12 +62,55 @@ function Login() {
         setError('Ha ocurrido un error.');
         setSuccessMessage('');
       }
+    };    */
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      try {
+
+        const response = await fetch(`${URL}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({ username, password }),
+
+        });
+
+        if (response.status === 401) {
+          setError('Usuario o clave invalidos')
+        };
+
+        const data = await response.json();
+
+        // check server.
+        if (data.access) {
+          localStorage.setItem('accessToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+
+          // redirect after succeesful login?
+          window.location.href = '/showbookings'
+
+        } else {
+          setError('Usuario o contraseña invalidos.');
+          setSuccessMessage('');
+        };
+
+      } catch (error) {
+        console.error('Error during login:', error);
+        setError('Ha ocurrido un error.');
+        setSuccessMessage('');
+      }
+
     };
 
 
   return (
     <div className="Login">
       <h2>Login</h2>
+      <p>Bienvenido al panel de administracion de terraza del valle</p>
       <form onSubmit={handleSubmit}>
         <label>
           Usuario:

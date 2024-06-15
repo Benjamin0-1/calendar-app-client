@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import './BookDate.css';
+import FetchWithAuth from "../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+
+const URL = process.env.REACT_APP_SERVER_URL;
+
 
 function BookDate() {
   const [successBooking, setSuccessBooking] = useState(false);
@@ -11,6 +17,7 @@ function BookDate() {
   const [dateError, setDateError] = useState('');
   const [nameError, setNameError] = useState('');
   const [currentDateError, setCurrentDateError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const [booking, setBooking] = useState({
     phone_number: '',
@@ -21,29 +28,40 @@ function BookDate() {
     date: ''
   });
 
+  // if not token then user is not logged in.
+  if (!accessToken) {
+    window.location.href = '/login' // <-- verify this exists
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setIsLoading(true)
+
     if (!booking.person_who_booked || booking.person_who_booked.length < 3) {
       setNameError('Debe introducir un nombre válido y de al menos 3 caracteres');
+      setIsLoading(false)
       return; 
     };
     // reset the previus error after it moves along through the form fields
     if (booking.phone_number.length < 7) {
       setPhoneError('Número telefónico demasiado corto');
       setNameError('');
+      setIsLoading(false)
       return;
     };
 
     if (!booking.owner) {
       setOwnerError('Debe seleccionar un dueño');
       setPhoneError('');
+      setIsLoading(false)
       return;
     };
 
     if (!booking.date) {
       setDateError('Debe seleccionar una fecha');
       setOwnerError('');
+      setIsLoading(false)
       return;
     };
 
@@ -57,14 +75,16 @@ function BookDate() {
       setPersonError('');
       setErrorMessage('');
       setNameError('');
+      setIsLoading(false)
       return;
     };
 
     try {
-      const response = await fetch('https://calendar-app-server3-2499724774e3.herokuapp.com/book', {
+      const response = await FetchWithAuth(`${URL}/book`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify(booking),
       });
@@ -79,15 +99,21 @@ function BookDate() {
         setDateError('');
         setCurrentDateError('');
         setNameError('');
+        setErrorMessage('');
+        setIsLoading(false) // while sending emails
       } else {
         const data = await response.json();
         setErrorMessage(data.isDateBooked ? 'La fecha ya está reservada ' : 'Error apartando fecha');
         setSuccessMessage('');
+        setIsLoading(false)
       }
     } catch (error) {
-      console.log('Internal server error', error);
+      console.log('Internal server error: ', error);
       setErrorMessage('Error apartando fecha');
       setSuccessMessage('');
+      setIsLoading(false)
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -193,6 +219,7 @@ const handleKeyPress = (e) => {
         {currentDateError && <div style={{ color: 'red' }}>{currentDateError}</div>}
         {successMessage && <div style={{color: 'green'}}> {successMessage} </div>} 
         {errorMessage && <div style={{color: 'red'}}> {errorMessage} </div>}
+        {isLoading && <h2>Cargando...</h2>}
       </form>
     </div>
   );

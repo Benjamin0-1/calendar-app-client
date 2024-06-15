@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
        <br/>
        <Link to='/parentsearch'>Búsqueda avanzada </Link>
        <br/>
+
+       <Link to='/deleteddate'>Ver fechas eliminadas </Link>
   
      </div>
    );

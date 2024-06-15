@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import './SearchByDateRange.css';
+import FetchWithAuth from "../../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function SearchByDateRange() {
   const [startDate, setStartDate] = useState('');
@@ -10,6 +15,10 @@ function SearchByDateRange() {
   const [generalError, setGeneralError] = useState('');
 
   const [error, setError] = useState('');
+
+  if (!accessToken) {
+    window.location.href = '/login'
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +34,9 @@ function SearchByDateRange() {
     }
 
     try {
-      const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/searchbydaterange?start=${startDate}&end=${endDate}`);
+      const response = await fetch(`${URL}/searchbydaterange?start=${startDate}&end=${endDate}`, {
+        credentials: 'include'
+      });
       const data = await response.json();
 
       if (response.ok) {

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
 import './DeleteByPhone.css';
+import FetchWithAuth from "../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+
+
+const URL = process.env.REACT_APP_SERVER_URL;
+
 
 function DeleteByPhone() {
     const [generalError, setGeneralError] = useState('');
@@ -9,6 +16,10 @@ function DeleteByPhone() {
     const [phoneError, setPhoneError] = useState('');
     const [invalidPhoneFormat, setInvalidPhoneFormat] = useState('');
     const [results, setResults] = useState([]);
+
+    if (!accessToken) {
+        window.location.href = '/login'
+    };
 
     const handleChange = (e) => {
         setPhoneNumber(e.target.value);
@@ -25,8 +36,12 @@ function DeleteByPhone() {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/deletebyphone/${phoneNumber}`, {
+            const response = await FetchWithAuth(`${URL}/deletebyphone/${phoneNumber}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
             });
     
             if (response.status === 404) {

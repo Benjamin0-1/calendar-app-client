@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import './DeleteByRange.css';
+import FetchWithAuth from "../auth/FetchWithAuth";
+
+
+const accessToken = localStorage.getItem('accessToken');
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function DeleteByRange() {
     const [generalError, setGeneralError] = useState('');
@@ -9,6 +15,10 @@ function DeleteByRange() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [invalidDateRange, setInvalidDateRange] = useState('');
+
+    if (!accessToken) {
+        window.location.href = '/login'
+    };
 
     const handleStartDate = (e) => {
         setStartDate(e.target.value);
@@ -20,8 +30,11 @@ function DeleteByRange() {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/deletebyrange/${startDate}/${endDate}`, {
-                method: 'DELETE'
+            const response = await fetch(`${URL}/deletebyrange/${startDate}/${endDate}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                  },
             });
 
             if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {

@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import './SearchByName.css'
+import FetchWithAuth from "../../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function SearchByName() {
   const [nameSearch, setNameSearch] = useState('');
@@ -8,11 +14,18 @@ function SearchByName() {
   const [generalError, setGeneralError] = useState('');
   const [searchResults, setSearchResults] = useState(null);
 
+  if (!accessToken) {
+    window.location.href = '/login'
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/searchbypersonwhobooked?searchbypersonwhobooked=${nameSearch}`);
+      const response = await FetchWithAuth(`${URL}/searchbypersonwhobooked?searchbypersonwhobooked=${nameSearch}`, {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      });
       const data = await response.json();
 
       if (response.ok) {

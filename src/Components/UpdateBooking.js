@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import './UpdateBooking.css'; 
+import FetchWithAuth from "../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function UpdateBooking() {
     // State variables to manage input values and errors
@@ -13,13 +17,19 @@ function UpdateBooking() {
 
     // Function to handle form submission
     // Function to handle form submission
+
+    if (!accessToken) {
+        window.location.href = '/login'
+    };
+
 const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/updatebooking/${dateToUpdate}`, {
+        const response = await fetch(`${URL}/updatebooking/${dateToUpdate}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
                 person_who_booked: personWhoBooked,

@@ -2,9 +2,16 @@ import React from "react";
 import { useState, useEffect } from "react";
 import './ShowAllBookings.css'
 
+import FetchWithAuth from "../auth/FetchWithAuth";
+
 //Login Imports:
 import { useAuth } from "./AuthContext";
 import { Navigate } from "react-router-dom";
+
+const accessToken = localStorage.getItem('accessToken');
+
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function ShowAllBookings() {
     const [dates, setDates] = useState([]);
@@ -12,9 +19,17 @@ function ShowAllBookings() {
     const[bookingsPerOwner, setBookingsPerOwner] = useState({});
     const [errorCount, setErrorCount] = useState('');
 
+
+    if (!accessToken) {
+      window.location.href = '/login'
+    };
+
+    /*
+
     const checkAuthentication = async () => { // this function was added for debugging and also called in useEffect below.
       try {
           const response = await fetch('https://calendar-app-server3-2499724774e3.herokuapp.com/login', {
+            credentials: 'include',
               method: 'POST',
               credentials: 'include',
               headers: {
@@ -30,12 +45,17 @@ function ShowAllBookings() {
       } catch (error) {
           console.log('ERROR FROM CATCH: ', error);
       }
-  };
+  }; */
   
 
     const getBookings = async () => {
         try {
-            const response = await fetch('https://calendar-app-server3-2499724774e3.herokuapp.com/book')
+            const response = await FetchWithAuth(`${URL}/book`, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+              },
+            })
             if (response.ok) {
                 const data = await response.json();
                 if (data.noDates) {
@@ -49,24 +69,31 @@ function ShowAllBookings() {
         }
     };
 
-    const getBookingsPerOwner = async () => {
-        try {
-            const response = await fetch('https://calendar-app-server3-2499724774e3.herokuapp.com/getbookingcount');
-            if (response.status === 200) {
-                const data = await response.json();
-                setBookingsPerOwner(data)
-            }
-        } catch (error) {
-            console.log('Error : ', error);
-            setErrorCount('Error mostrando resultados')
+   const getBookingsPerOwner = async () => {
+    try {
+        const response = await FetchWithAuth(`${URL}/getbookingcount`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+        });
+        console.log('Response:', response); // Log the response here
+        if (response.status === 200) {
+            const data = await response.json();
+            setBookingsPerOwner(data)
         }
-    };
+    } catch (error) {
+        console.log('Error : ', error);
+        setErrorCount('Error mostrando resultados')
+    }
+};
+
+  
 
 
     useEffect(() => {
         getBookings();
         getBookingsPerOwner(); // might add dependancy array to update it if other user is booking dates
-        checkAuthentication();
     }, []); 
     // this component must also showed who booked the date, person who booked, phone number and email.
 

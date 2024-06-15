@@ -1,6 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import './SearchByPhone.css'
+import FetchWithAuth from "../../auth/FetchWithAuth";
+
+const accessToken = localStorage.getItem('accessToken');
+
+const URL = process.env.REACT_APP_SERVER_URL;
 
 function SearchByPhone() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -9,6 +14,10 @@ function SearchByPhone() {
   const [generalError, setGeneralError] = useState('');
 
   const [notFound, setNotFound] = useState('');
+
+  if (!accessToken) {
+    window.location.href = '/login';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +33,10 @@ function SearchByPhone() {
     }
 
     try {
-      const response = await fetch(`https://calendar-app-server3-2499724774e3.herokuapp.com/searchbyphone?searchbyphone=${phoneNumber}`);
+      const response = await FetchWithAuth(`${URL}/searchbyphone?searchbyphone=${phoneNumber}`, {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      });
 
       if (response.ok) {
         const data = await response.json();
