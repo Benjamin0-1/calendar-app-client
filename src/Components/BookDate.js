@@ -1,24 +1,14 @@
 import React, { useState } from "react";
-import './BookDate.css';
 import FetchWithAuth from "../auth/FetchWithAuth";
+import { TextField, Button, Typography, MenuItem, Select, InputLabel, CircularProgress, Container } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const accessToken = localStorage.getItem('accessToken');
-
 const URL = process.env.REACT_APP_SERVER_URL;
 
-
 function BookDate() {
-  const [successBooking, setSuccessBooking] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [phoneError, setPhoneError] = useState('');
-  const [ownerError, setOwnerError] = useState('');
-  const [personError, setPersonError] = useState('');
-  const [dateError, setDateError] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [currentDateError, setCurrentDateError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
   const [booking, setBooking] = useState({
     phone_number: '',
     email: '',
@@ -28,56 +18,47 @@ function BookDate() {
     date: ''
   });
 
-  // if not token then user is not logged in.
   if (!accessToken) {
-    window.location.href = '/login' // <-- verify this exists
+    window.location.href = '/login'; 
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setIsLoading(true)
+    setIsLoading(true);
 
     if (!booking.person_who_booked || booking.person_who_booked.length < 3) {
-      setNameError('Debe introducir un nombre válido y de al menos 3 caracteres');
-      setIsLoading(false)
+      toast.error('Debe introducir un nombre válido y de al menos 3 caracteres');
+      setIsLoading(false);
       return; 
-    };
-    // reset the previus error after it moves along through the form fields
+    }
+
     if (booking.phone_number.length < 7) {
-      setPhoneError('Número telefónico demasiado corto');
-      setNameError('');
-      setIsLoading(false)
+      toast.error('Número telefónico demasiado corto');
+      setIsLoading(false);
       return;
-    };
+    }
 
     if (!booking.owner) {
-      setOwnerError('Debe seleccionar un dueño');
-      setPhoneError('');
-      setIsLoading(false)
+      toast.error('Debe seleccionar un dueño');
+      setIsLoading(false);
       return;
-    };
+    }
 
     if (!booking.date) {
-      setDateError('Debe seleccionar una fecha');
-      setOwnerError('');
-      setIsLoading(false)
+      toast.error('Debe seleccionar una fecha');
+      setIsLoading(false);
       return;
-    };
+    }
 
     const selectedDate = new Date(booking.date);
     let currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
     if (selectedDate < currentDate) {
-      setCurrentDateError('No puede reservar una fecha que ya pasó');
-      setOwnerError('');
-      setPersonError('');
-      setErrorMessage('');
-      setNameError('');
-      setIsLoading(false)
+      toast.error('No puede reservar una fecha que ya pasó');
+      setIsLoading(false);
       return;
-    };
+    }
 
     try {
       const response = await FetchWithAuth(`${URL}/book`, {
@@ -91,33 +72,27 @@ function BookDate() {
 
       if (response.status === 201) {
         const data = await response.json();
-        setSuccessBooking(true);
-        setSuccessMessage(`Fecha: ${data.date} apartada con éxito`);
-        setPhoneError('');
-        setOwnerError('');
-        setPersonError('');
-        setDateError('');
-        setCurrentDateError('');
-        setNameError('');
-        setErrorMessage('');
-        setIsLoading(false) // while sending emails
+        toast.success(`Fecha: ${data.date} apartada con éxito`);
+        setBooking({
+          phone_number: '',
+          email: '',
+          custom_message: '',
+          owner: '',
+          person_who_booked: '',
+          date: ''
+        });
       } else {
         const data = await response.json();
-        setErrorMessage(data.isDateBooked ? 'La fecha ya está reservada ' : 'Error apartando fecha');
-        setSuccessMessage('');
-        setIsLoading(false)
+        toast.error(data.isDateBooked ? 'La fecha ya está reservada' : 'Error apartando fecha');
       }
     } catch (error) {
-      console.log('Internal server error: ', error);
-      setErrorMessage('Error apartando fecha');
-      setSuccessMessage('');
-      setIsLoading(false)
+      toast.error('Error apartando fecha');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
-  const handleChange = async (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setBooking((prevBooking) => ({
       ...prevBooking,
@@ -125,104 +100,97 @@ function BookDate() {
     }));
   };
 
-  //to not allow uppercase values in the person_who_booked/cliente field.
-const handleKeyPress = (e) => {
-  if (e.target.name === 'person_who_booked' && e.key.toUpperCase() === e.key) {
-    e.preventDefault();
-    const newValue = e.target.value + e.key.toLowerCase();
-    setBooking(prevBooking => ({
-      ...prevBooking,
-      person_who_booked: newValue
-    }));
-  }
-};
-
+  const handleKeyPress = (e) => {
+    if ((e.target.name === 'person_who_booked' || e.target.name === 'phone_number') && e.key === ' ') {
+      e.preventDefault(); // Prevent space input in person_who_booked and phone_number
+    }
+  };
 
   return (
-    <div className="BookDate">
-      <h3>Aparta una fecha</h3>
-
-      <label>
-        Persona que apartó:
-        <input
+    <Container maxWidth="sm">
+      <ToastContainer />
+      <Typography variant="h4" gutterBottom>Aparta una fecha</Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          label="Persona que apartó"
           type="text"
           name="person_who_booked"
           value={booking.person_who_booked}
           onChange={handleChange}
           onKeyPress={handleKeyPress}
+          margin="normal"
         />
-      </label>
-      {nameError && <div style={{color: 'red'}}> {nameError} </div>}
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Numero telefónico:
-          <input
-            type="text"
-            name="phone_number"
-            value={booking.phone_number}
-            onChange={handleChange}
-          />
-        </label>
-        {phoneError && <div style={{color: 'red'}}> {phoneError} </div>}
+        <TextField
+          fullWidth
+          label="Numero telefónico"
+          type="number" // Change the type to "number"
+          name="phone_number"
+          value={booking.phone_number}
+          onChange={handleChange}
+          onKeyPress={handleKeyPress} // Add this line to handle space in phone_number
+          margin="normal"
+        />
 
-        <label>
-          Correo Electrónico (opcional):
-          <input
-            type="email"
-            name="email"
-            value={booking.email}
-            onChange={handleChange}
-          />
-        </label>
-        
+        <TextField
+          fullWidth
+          label="Correo Electrónico (opcional)"
+          type="email"
+          name="email"
+          value={booking.email}
+          onChange={handleChange}
+          margin="normal"
+        />
 
-        <label>
-          Mensaje Personalizado (opcional):
-          <textarea
-            name="custom_message"
-            value={booking.custom_message}
-            onChange={handleChange}
-          />
-        </label>
-        
-        
-        <label>
-          Seleccionar Dueño:
-          <select
-            name="owner"
-            value={booking.owner}
-            onChange={handleChange}
-          >
-            <option value=''>Selecciona:</option>
-            <option value='ricardo'>Ricardo</option>
-            <option value='jose'>Jose</option>
-          </select>
-        </label>
-       
-        {ownerError && <div style={{color: 'red'}}> {ownerError} </div>}
+        <TextField
+          fullWidth
+          label="Mensaje Personalizado (opcional)"
+          name="custom_message"
+          value={booking.custom_message}
+          onChange={handleChange}
+          multiline
+          rows={4}
+          margin="normal"
+        />
 
-        <label>
-          Fecha:
-          <input
-            type="date"
-            name="date"
-            value={booking.date}
-            onChange={handleChange}
-          />
-        </label>
-       
-        {dateError && <div style={{color: 'red'}}> {dateError} </div>}
-        
+        <InputLabel id="owner-label">Seleccionar Dueño</InputLabel>
+        <Select
+          labelId="owner-label"
+          fullWidth
+          name="owner"
+          value={booking.owner}
+          onChange={handleChange}
+          margin="normal"
+        >
+          <MenuItem value=""><em>Selecciona:</em></MenuItem>
+          <MenuItem value='ricardo'>Ricardo</MenuItem>
+          <MenuItem value='jose'>Jose</MenuItem>
+        </Select>
 
-        <button type="submit">Apartar Fecha</button>
-        {currentDateError && <div style={{ color: 'red' }}>{currentDateError}</div>}
-        {successMessage && <div style={{color: 'green'}}> {successMessage} </div>} 
-        {errorMessage && <div style={{color: 'red'}}> {errorMessage} </div>}
-        {isLoading && <h2>Cargando...</h2>}
+        <TextField
+          fullWidth
+          label="Fecha"
+          type="date"
+          name="date"
+          value={booking.date}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          margin="normal"
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} /> : 'Apartar Fecha'}
+        </Button>
       </form>
-    </div>
+    </Container>
   );
-};
+}
 
 export default BookDate;

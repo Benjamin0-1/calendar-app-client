@@ -18,6 +18,7 @@ function SearchByDateRange() {
 
   if (!accessToken) {
     window.location.href = '/login'
+    return null // prevent futher rendering
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +36,11 @@ function SearchByDateRange() {
 
     try {
       const response = await fetch(`${URL}/searchbydaterange?start=${startDate}&end=${endDate}`, {
-        credentials: 'include'
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+        }
       });
       const data = await response.json();
 
@@ -102,7 +107,7 @@ function SearchByDateRange() {
 
       {searchResults && (
         <div>
-          <h3>Resultados de la búsqueda</h3>
+          <h3>Resultados de la búsqueda: {searchResults.length}</h3>
           {/* Render search results in an ordered list */}
           <ol>
             {searchResults.map((result) => (

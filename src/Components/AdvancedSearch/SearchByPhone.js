@@ -1,10 +1,8 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import './SearchByPhone.css'
 import FetchWithAuth from "../../auth/FetchWithAuth";
 
 const accessToken = localStorage.getItem('accessToken');
-
 const URL = process.env.REACT_APP_SERVER_URL;
 
 function SearchByPhone() {
@@ -12,7 +10,6 @@ function SearchByPhone() {
   const [searchResults, setSearchResults] = useState(null);
   const [phoneError, setPhoneError] = useState('');
   const [generalError, setGeneralError] = useState('');
-
   const [notFound, setNotFound] = useState('');
 
   if (!accessToken) {
@@ -25,10 +22,11 @@ function SearchByPhone() {
     setPhoneError('');
     setGeneralError('');
 
+    // Validate phone number format (numeric only)
     const isNumeric = /^[0-9]+$/.test(phoneNumber);
 
     if (!isNumeric) {
-      setPhoneError('Numero de telefono invalido.');
+      setPhoneError('Número de teléfono inválido.');
       return;
     }
 
@@ -44,7 +42,7 @@ function SearchByPhone() {
           setSearchResults(data);
           setNotFound('');
         } else {
-          setNotFound('No hay fechas con ese numero telefonico');
+          setNotFound('No hay fechas con ese número telefónico');
           setSearchResults(null); // Reset search results
         }
       } else {
@@ -52,21 +50,34 @@ function SearchByPhone() {
       }
     } catch (error) {
       console.error('Error from catch:', error);
-      setGeneralError('Ha ocurrido un Error.');
+      setGeneralError('Ha ocurrido un error.');
+    }
+  };
+
+  const handleChange = (e) => {
+    const value = e.target.value.replace(/\s+/g, ''); // Remove spaces from input value
+    setPhoneNumber(value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.target.name === 'phoneNumber' && e.key === ' ') {
+      e.preventDefault(); // Prevent space input
     }
   };
 
   return (
     <div className="SearchByPhone">
-      <h3>Busqueda por numero telefonico de cliente</h3>
+      <h3>Búsqueda por número telefónico de cliente</h3>
       <br />
       <form onSubmit={handleSubmit}>
         <label>
-          Numero telefonico:
+          Número telefónico:
           <input
-            type="text"
+            type="number"
+            name="phoneNumber"
             value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            onChange={handleChange}
+            onKeyPress={handleKeyPress}
           />
         </label>
 
@@ -86,13 +97,13 @@ function SearchByPhone() {
       {/* Display search results if available */}
       {searchResults && (
         <div>
-          <h2>Resultados </h2>
+          <h2>Resultados</h2>
           {/* Render search results in a user-friendly manner */}
           <ol>
             {searchResults.map((result) => (
               <li key={result.date_id}>
                 <p>Fecha: {result.date}</p>
-                <p>Numero de telefono: {result.phone_number}</p>
+                <p>Número de teléfono: {result.phone_number}</p>
                 <p>Nombre de cliente: {result.person_who_booked || 'No hay nombre disponible'}</p>
                 <p>Mensaje personalizado: {result.custom_message || 'No hay mensaje personalizado'}</p>
                 <p>Dueño: {result.owner}</p>

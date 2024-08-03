@@ -1,61 +1,34 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import './ShowAllBookings.css'
-
+import React, { useState, useEffect } from "react";
+import './ShowAllBookings.css';
+import { useNavigate } from "react-router-dom";
 import FetchWithAuth from "../auth/FetchWithAuth";
 
-//Login Imports:
-import { useAuth } from "./AuthContext";
-import { Navigate } from "react-router-dom";
-
 const accessToken = localStorage.getItem('accessToken');
-
-
 const URL = process.env.REACT_APP_SERVER_URL;
 
 function ShowAllBookings() {
     const [dates, setDates] = useState([]);
     const [error, setError] = useState('');
-    const[bookingsPerOwner, setBookingsPerOwner] = useState({});
+    const [bookingsPerOwner, setBookingsPerOwner] = useState({});
     const [errorCount, setErrorCount] = useState('');
+    const [selectedOwner, setSelectedOwner] = useState(''); // New state for selected owner
+    const [owners, setOwners] = useState([]); // To store the list of owners
 
+    const navigate = useNavigate();
 
     if (!accessToken) {
-      window.location.href = '/login'
-    };
+        window.location.href = '/login';
+    }
 
-    /*
-
-    const checkAuthentication = async () => { // this function was added for debugging and also called in useEffect below.
-      try {
-          const response = await fetch('https://calendar-app-server3-2499724774e3.herokuapp.com/login', {
-            credentials: 'include',
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ username: "Compadres", password: "Compadres2024" }),
-          });
-  
-          // Handle the response here if needed
-          const data = await response.json();
-          console.log(data);
-  
-      } catch (error) {
-          console.log('ERROR FROM CATCH: ', error);
-      }
-  }; */
-  
-
-    const getBookings = async () => {
+    const getBookings = async (owner) => {
         try {
-            const response = await FetchWithAuth(`${URL}/book`, {
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-              },
-            })
+            const url = owner ? `${URL}/book-${owner}` : `${URL}/book`; // Dynamically construct URL
+            const response = await FetchWithAuth(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            });
             if (response.ok) {
                 const data = await response.json();
                 if (data.noDates) {
@@ -69,72 +42,131 @@ function ShowAllBookings() {
         }
     };
 
-   const getBookingsPerOwner = async () => {
-    try {
-        const response = await FetchWithAuth(`${URL}/getbookingcount`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          },
-        });
-        console.log('Response:', response); // Log the response here
-        if (response.status === 200) {
-            const data = await response.json();
-            setBookingsPerOwner(data)
+    const getBookingsPerOwner = async () => {
+        try {
+            const response = await FetchWithAuth(`${URL}/getbookingcount`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            });
+            if (response.status === 200) {
+                const data = await response.json();
+                setBookingsPerOwner(data);
+                setOwners(Object.keys(data)); // Set the list of owners
+            }
+        } catch (error) {
+            console.log('Error : ', error);
+            setErrorCount('Error mostrando resultados');
         }
-    } catch (error) {
-        console.log('Error : ', error);
-        setErrorCount('Error mostrando resultados')
-    }
-};
-
-  
-
+    };
 
     useEffect(() => {
         getBookings();
-        getBookingsPerOwner(); // might add dependancy array to update it if other user is booking dates
-    }, []); 
-    // this component must also showed who booked the date, person who booked, phone number and email.
+        getBookingsPerOwner();
+    }, []); // Empty dependency array means this runs once when the component mounts
 
-
-   /* const {access} = useAuth(); // Login.
-    console.log(access);
-    if (!access) {
-      return <Navigate to='/login' />;
-    }; */
-
+    const handleOwnerChange = (event) => {
+        const owner = event.target.value;
+        setSelectedOwner(owner);
+        getBookings(owner); // Fetch bookings for the selected owner
+    };
 
     return (
         <div className="ShowAllBookings">
-          <br/>
-          <p>Total de fechas apartadas: {dates.length}</p> 
-    
-          <div>
-            {Object.entries(bookingsPerOwner).map(([owner, count]) => (
-              <div key={owner}>{`${owner}: Ha apartado: ${count} Fechas`}</div>
-            ))}
-          </div>
-    
-          {error && <div style={{ color: 'red' }}>{error}</div>}
-          <h2>Fechas apartadas:</h2>
-          <ol>
-            {dates.map((date) => (
-              <li key={date.date_id}>
-                <div>{new Date(date.date).toISOString().split('T')[0]}</div>
-                <div>Nombre de cliente: <span style={{color: 'blue'}}>  {date.person_who_booked || 'No existe nombre de cliente'} </span> </div>
-                
-                <div>Rentada a cliente por Dueño: <span style={{ color: 'green' }}>{date.owner}</span></div>
-                <br/>
-                <div>Numero telefonico de cliente: {date.phone_number || 'No hay numero disponible'}</div>
-                <br/>
-                <div>Correo cliente: {date.email || 'No hay correo disponible'}</div>
-                <div>Mensaje personalizado: {date.custom_message || 'No hay mensaje personalizado'}</div>
-              </li>
-            ))}
-          </ol>
+            <br />
+            <p>Total de fechas apartadas: {dates.length}</p>
+
+            <div>
+                {Object.entries(bookingsPerOwner).map(([owner, count]) => (
+                    <div key={owner}>{`${owner}: Ha apartado: ${count} Fechas`}</div>
+                ))}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <label 
+        htmlFor="owner-filter" 
+        style={{ marginRight: '10px', fontSize: '16px', fontWeight: 'bold' }}
+    >
+        Filtrar por dueño:
+    </label>
+    <select 
+        id="owner-filter" 
+        value={selectedOwner} 
+        onChange={handleOwnerChange}
+        style={{
+            padding: '5px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            fontSize: '16px',
+            outline: 'none',
+            cursor: 'pointer'
+        }}
+    >
+        <option value="">Todos</option>
+        {owners.map((owner) => (
+            <option key={owner} value={owner}>{owner}</option>
+        ))}
+    </select>
+</div>
+
+
+
+            {error && <div style={{ color: 'red' }}>{error}</div>}
+            <h2>Fechas apartadas:</h2>
+            <ol>
+                {dates.map((date) => (
+                    <li key={date.date_id}>
+                        <div>{new Date(date.date).toISOString().split('T')[0]}</div>
+                        <div>Nombre de cliente: <span style={{ color: 'blue' }}> {date.person_who_booked || 'No existe nombre de cliente'} </span></div>
+                        <div>Rentada a cliente por Dueño: <span style={{ color: 'green' }}>{date.owner}</span></div>
+                        <br />
+                        <div>Numero telefonico de cliente: {date.phone_number || 'No hay numero disponible'}</div>
+                        <br />
+                        <div>Correo cliente: {date.email || 'No hay correo disponible'}</div>
+                        <div>Mensaje personalizado: {date.custom_message || 'No hay mensaje personalizado'}</div>
+                    </li>
+                ))}
+            </ol>
         </div>
-      );
+    );
 }
 
 export default ShowAllBookings;
+
+
+/**
+ * const checkTokenValidity = async () => {
+        try {
+            const response = await FetchWithAuth(`${URL}/validate-token`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
+            if (response.status === 401) { // Unauthorized
+                // Token is invalid or expired
+                localStorage.removeItem('accessToken'); // Clear invalid token
+                navigate('/login'); // Redirect to login
+            } else if (!response.ok) {
+                setError('Failed to validate token.');
+            }
+        } catch (error) {
+            console.error('Error validating token:', error);
+            localStorage.removeItem('accessToken'); // Clear token on error
+            navigate('/login'); // Redirect to login
+        }
+    };
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem('accessToken');
+
+        if (!accessToken) {
+            navigate('/login');
+        } else {
+            checkTokenValidity(); // Check if the token is still valid
+        }
+    }, [navigate]);
+
+ */

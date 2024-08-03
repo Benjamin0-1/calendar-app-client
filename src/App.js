@@ -11,6 +11,7 @@ import DeleteByPhone from './Components/DeleteByPhone';
 import DeleteByRange from './Components/DeleteByDateRange';
 import UpdateBooking from './Components/UpdateBooking';
 import DeletedDate from './Components/DeletedDate';
+import Logout from './Components/Logout';
 
 // user pages
 import FAQ from './UserPages/FAQ';
@@ -22,12 +23,17 @@ import NewsLetter from './UserPages/NewsLetter';
 import Login from './Components/Login';
 
 const accessToken = localStorage.getItem('accessToken');
+const refreshToken = localStorage.getItem('refreshToken');
 
 const URL = process.env.REACT_APP_SERVER_URL;
 
 
 function App() {
   const [access, setAccess] = useState(false); // MUST BE: FALSE
+
+  //if (!accessToken && !refreshToken) {
+    // here conditionally render the logout button.
+  //}
   
   // REMOVE !
  
@@ -38,6 +44,9 @@ function App() {
     <Router>
       <div className="App">
         <Navbar />
+        <div className="logout-button">
+          <Logout/>
+        </div>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/book" element={<BookDate />} access={access} />

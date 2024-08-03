@@ -1,40 +1,34 @@
 import React, { useState } from "react";
-import './DeleteByPhone.css';
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import FetchWithAuth from "../auth/FetchWithAuth";
 
 const accessToken = localStorage.getItem('accessToken');
-
-
 const URL = process.env.REACT_APP_SERVER_URL;
 
-
 function DeleteByPhone() {
-    const [generalError, setGeneralError] = useState('');
-    const [dateNotFoundMessage, setDateNotFoundMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [phoneError, setPhoneError] = useState('');
-    const [invalidPhoneFormat, setInvalidPhoneFormat] = useState('');
-    const [results, setResults] = useState([]);
 
     if (!accessToken) {
-        window.location.href = '/login'
-    };
+        window.location.href = '/login';
+    }
 
     const handleChange = (e) => {
         setPhoneNumber(e.target.value);
     };
-/*
-    const validatePhone = () => {
-        if (!/^\d*$/.test(phoneNumber)) {
-            setInvalidPhoneFormat('Solamente debe contener numeros');
-            setSuccessMessage('');
-            setDateNotFoundMessage('');
-            setGeneralError('');
-        }; 
-    }; */
 
     const handleDelete = async () => {
+        if (!/^\d*$/.test(phoneNumber)) {
+            toast.error('El formato del número telefónico es inválido. Solamente debe contener números.');
+            return;
+        }
+
+        if (phoneNumber.length < 7) {
+            toast.error('Número demasiado corto.');
+            return;
+        }
+
         try {
             const response = await FetchWithAuth(`${URL}/deletebyphone/${phoneNumber}`, {
                 method: 'DELETE',
@@ -43,69 +37,51 @@ function DeleteByPhone() {
                     'Authorization': `Bearer ${accessToken}`
                 }
             });
-    
+
             if (response.status === 404) {
-                setDateNotFoundMessage(`No se ha encontrado ninguna fecha con el número telefónico: ${phoneNumber}`);
-                setGeneralError('');
-                setSuccessMessage('');
-                setInvalidPhoneFormat('');
-                setPhoneError('');
+                toast.error(`No se ha encontrado ninguna fecha con el número telefónico: ${phoneNumber}`);
                 return;
             }
-    
-            if (!/^\d*$/.test(phoneNumber)) {
-                setInvalidPhoneFormat('Solamente debe contener numeros.'); 
-                setGeneralError('');
-                setDateNotFoundMessage('');
-                setSuccessMessage('');
-                setPhoneError('');
-                return;
-            }
-            
-            if (phoneNumber.length < 7) {
-                setPhoneError('Numero demasiado corto.');
-                setGeneralError('');
-                setDateNotFoundMessage('');
-                setSuccessMessage('');
-                setInvalidPhoneFormat('');
-                return;
-            }
-    
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-    
+
             const data = await response.json();
-            setSuccessMessage(data.successMessage);
-            setGeneralError('');
-            setDateNotFoundMessage('');
-            setInvalidPhoneFormat('');
-            setPhoneError('');
+            toast.success(data.successMessage);
+            setPhoneNumber('');
         } catch (error) {
-            setGeneralError('Ha ocurrido un error, por favor intente nuevamente.');
-            setSuccessMessage('');
-            setDateNotFoundMessage('');
-            setInvalidPhoneFormat('');
-            setPhoneError('');
+            toast.error('Ha ocurrido un error, por favor intente nuevamente.');
             console.log(`Error from catch: ${error}`);
         }
     };
-    
 
     return (
-        <div className="DeleteByPhone">
-            <h3>Eliminar fechas por número telefónico</h3>
-            <p><strong>ADVERTENCIA:</strong> Este método eliminará todas las fechas asociadas al número telefónico ingresado</p>
-            <input type="text" onChange={handleChange} />
-            <button onClick={handleDelete}>Eliminar fechas por número telefónico</button>
-            {generalError && <p style={{ color: 'red' }}>{generalError}</p>}
-            {dateNotFoundMessage && <p style={{ color: 'red' }}>{dateNotFoundMessage}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-            {phoneError && <p style={{color: 'red'}}>{phoneError}</p>}
-            {invalidPhoneFormat && <p style={{ color: 'red' }}>El formato del número telefónico es inválido</p>}
-        </div>
+        <Container maxWidth="sm">
+            <ToastContainer />
+            <Typography variant="h6" color="error">
+                <strong>ADVERTENCIA:</strong> Este método eliminará todas las fechas asociadas al número telefónico ingresado
+            </Typography>
+            <Box component="form" noValidate autoComplete="off" mt={2}>
+                <TextField
+                    fullWidth
+                    label="Número Telefónico"
+                    type="text"
+                    value={phoneNumber}
+                    onChange={handleChange}
+                    margin="normal"
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleDelete}
+                    disabled={!phoneNumber} // Disable the button if the phone number is empty
+                >
+                    Eliminar fechas por número telefónico
+                </Button>
+            </Box>
+        </Container>
     );
-    
-};
+}
 
 export default DeleteByPhone;
