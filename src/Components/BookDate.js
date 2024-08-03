@@ -52,9 +52,13 @@ function BookDate() {
 
     const selectedDate = new Date(booking.date);
     let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+currentDate.setHours(0, 0, 0, 0);
 
-    if (selectedDate < currentDate) {
+// Set currentDate to the start of the previous day, this will avoid issue in which a user cant book the current day.
+    currentDate.setDate(currentDate.getDate() - 1);
+
+
+    if (selectedDate < currentDate) { // improve this to also allow for the current day.
       toast.error('No puede reservar una fecha que ya pasó');
       setIsLoading(false);
       return;
